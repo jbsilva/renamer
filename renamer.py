@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*-*- encoding: utf-8 -*-*-
 # Created: Wed, 18 Jun 2014 21:52:03 +0200
 
@@ -21,11 +21,14 @@ from unidecode import unidecode
 def main(rs):
     for root, dirs, files in os.walk('./', topdown=False):
         for path in itertools.chain(files, dirs):
-            old = os.path.join(root, path)
+
+            dict = str.maketrans("/", "_")
             if rs:
-                new = os.path.join(root, unidecode(path.replace(' ', '_')))
-            else:
-                new = os.path.join(root, unidecode(path))
+                dict[ord(' ')] = ord('_')
+            name = unidecode(path).translate(dict)
+
+            old = os.path.join(root, path)
+            new = os.path.join(root, name)
             if not os.path.exists(new):
                 os.rename(old, new)
     return 0
