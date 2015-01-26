@@ -18,13 +18,15 @@ import itertools
 from unidecode import unidecode
 
 
-def main(rs):
+def main(rs, rp):
     for root, dirs, files in os.walk('./', topdown=False):
         for path in itertools.chain(files, dirs):
 
             dict = str.maketrans("/", "_")
             if rs:
                 dict[ord(' ')] = ord('_')
+            if rp:
+                dict[ord('[')] = dict[ord(']')] = dict[ord(':')] = dict[ord('?')] = dict[ord('!')] = dict[ord('"')] = ord('_')
             name = unidecode(path).translate(dict)
 
             old = os.path.join(root, path)
@@ -33,12 +35,16 @@ def main(rs):
                 os.rename(old, new)
     return 0
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Renomeia arquivos recursivamente')
     parser.add_argument('-rs', '--remove_space', dest="rs",
                         action='store_true',
                         help='Troca espaço por underscore.')
+    parser.add_argument('-rp', '--remove_puctuation', dest="rp",
+                        action='store_true',
+                        help='Troca pontuação por underscore.')
     args = parser.parse_args()
 
     sys.exit(main(args.rs))
