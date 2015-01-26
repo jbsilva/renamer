@@ -22,11 +22,16 @@ def main(rs, rp):
     for root, dirs, files in os.walk('./', topdown=False):
         for path in itertools.chain(files, dirs):
 
-            dict = str.maketrans("/", "_")
+            dict = str.maketrans("/",
+                                 "_")
             if rs:
-                dict[ord(' ')] = ord('_')
+                dict = str.maketrans("/ ",
+                                     "__")
+            # Will also remove spaces
             if rp:
-                dict[ord('[')] = dict[ord(']')] = dict[ord(':')] = dict[ord('?')] = dict[ord('!')] = dict[ord('"')] = ord('_')
+                dict = str.maketrans("/ [](){}:?!",
+                                     "___________")
+
             name = unidecode(path).translate(dict)
 
             old = os.path.join(root, path)
