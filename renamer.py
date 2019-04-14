@@ -62,6 +62,12 @@ def main(args):
             if args.tt:
                 name = name.title()
 
+            # Remove _-_, --, .. and __
+            replaces = (("_-_", "-"), ("__", "_"), ("--", "-"), ("..", "."))
+            for r in replaces:
+                while r[0] in name:
+                    name = name.replace(*r)
+
             old = os.path.join(root, path)
             new = os.path.join(root, name)
             if not os.path.exists(new):
