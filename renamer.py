@@ -58,26 +58,35 @@ def main(args):
 
             name = name.translate(table)
 
-            # TODO: Do not capitalize extension
-            if args.tt:
-                name = name.title()
-
             # Remove _-_, --, .. and __
-            replaces = (("_-_", "-"), ("__", "_"), ("--", "-"), ("..", "."))
+            replaces = (("_-_", "-"), ("__", "_"), ("--", "-"), ("..", "."),
+                        ("._", "_"), ("-_", "-"), ("_-", "-"), (",_", ","))
             for r in replaces:
                 while r[0] in name:
                     name = name.replace(*r)
+
+            # Remove undesired first and last character
+            nome, ext = os.path.splitext(name)
+            if nome[0] in ".-_":
+                name = f"{nome[1:]}{ext}"
+            if nome[-1] in ".-_":
+                name = f"{nome[:-1]}{ext}"
+
+            # Capitalize
+            if args.tt:
+                nome, ext = os.path.splitext(name)
+                name = f"{nome[:-1].title()}{ext}"
 
             old = os.path.join(root, path)
             new = os.path.join(root, name)
             if not os.path.exists(new):
                 if args.dr:
-                    print("mv \"{}\" \"{}\"".format(old, new))
+                    print(f'mv "{old}" "{new}"')
                 else:
                     if args.verbosity == 1:
-                        print("\"{}\"".format(old))
+                        print(f'"{old}"')
                     elif args.verbosity > 1:
-                        print("mv \"{}\" \"{}\"".format(old, new))
+                        print(f'mv "{old}" "{new}"')
                     os.rename(old, new)
     return 0
 
